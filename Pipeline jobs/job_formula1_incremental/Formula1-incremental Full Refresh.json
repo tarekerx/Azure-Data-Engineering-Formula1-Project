@@ -1,0 +1,325 @@
+{
+  "name": "Formula1-incremental Full Refresh",
+  "email_notifications": {
+    "on_start": [
+      "tarekihape@gmail.com"
+    ],
+    "on_success": [
+      "tarekihape@gmail.com"
+    ],
+    "on_failure": [
+      "tarekihape@gmail.com"
+    ],
+    "on_duration_warning_threshold_exceeded": [
+      "tarekihape@gmail.com"
+    ],
+    "no_alert_for_skipped_runs": false
+  },
+  "webhook_notifications": {},
+  "timeout_seconds": 600,
+  "health": {
+    "rules": [
+      {
+        "metric": "RUN_DURATION_SECONDS",
+        "op": "GREATER_THAN",
+        "value": 420
+      }
+    ]
+  },
+  "trigger": {
+    "pause_status": "UNPAUSED",
+    "table_update": {
+      "table_names": [
+        "formula1.control.batch_events"
+      ]
+    }
+  },
+  "max_concurrent_runs": 1,
+  "tasks": [
+    {
+      "task_key": "00_Build_Nationality_Region_Reference",
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/04-gold/91.Build Nationality Region Refrence",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "01_Ingest_Circuits",
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/02-bronze/01.Ingest Circuits File",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "01_Ingest_Constructors",
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/02-bronze/03.Ingest Constructors File",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "01_Ingest_Drivers",
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/02-bronze/04.Ingest drivers.json file",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "01_Ingest_Races",
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/02-bronze/02.Ingest Races File",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "01_Ingest_Results",
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/02-bronze/05.Ingest results files",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "01_Ingest_Sprints",
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/02-bronze/06.Ingest sprints files",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "02_Transform_Circuits",
+      "depends_on": [
+        {
+          "task_key": "01_Ingest_Circuits"
+        }
+      ],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/03-silver/01.Circuits transformation",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "02_Transform_Constructors",
+      "depends_on": [
+        {
+          "task_key": "01_Ingest_Constructors"
+        }
+      ],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/03-silver/03.Constructors transformation",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "02_Build_Constructors_Dim",
+      "depends_on": [
+        {
+          "task_key": "02_Transform_Constructors"
+        },
+        {
+          "task_key": "00_Build_Nationality_Region_Reference"
+        }
+      ],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/04-gold/02.Build Constructors Dimension",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "02_Transform_Drivers",
+      "depends_on": [
+        {
+          "task_key": "01_Ingest_Drivers"
+        }
+      ],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/03-silver/06.Drivers transformation",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "02_Transform_Races",
+      "depends_on": [
+        {
+          "task_key": "01_Ingest_Races"
+        }
+      ],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/03-silver/02.Races transformation",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "02_Transform_Results",
+      "depends_on": [
+        {
+          "task_key": "01_Ingest_Results"
+        }
+      ],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/03-silver/05.Results transformation",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "02_Transform_Sprints",
+      "depends_on": [
+        {
+          "task_key": "01_Ingest_Sprints"
+        }
+      ],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/03-silver/04.Sprints transformation",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "03_Build_Drivers_Dim",
+      "depends_on": [
+        {
+          "task_key": "00_Build_Nationality_Region_Reference"
+        },
+        {
+          "task_key": "02_Transform_Drivers"
+        }
+      ],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/04-gold/03.Build Drivers Dimension",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    },
+    {
+      "task_key": "03_Build_Races_Dim",
+      "depends_on": [
+        {
+          "task_key": "02_Transform_Races"
+        },
+        {
+          "task_key": "02_Transform_Circuits"
+        }
+      ],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/04-gold/01.Build Races Dimension",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "environment_key": "Env_Build_Races_Dim",
+      "disabled": false
+    },
+    {
+      "task_key": "03_Build_Session_Results_Fact",
+      "depends_on": [
+        {
+          "task_key": "02_Transform_Results"
+        },
+        {
+          "task_key": "02_Transform_Sprints"
+        }
+      ],
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/tarekihape@gmail.com/databricks course/formula1-projects-increamental-load/04-gold/04.Build Session Results Fact",
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 0,
+      "email_notifications": {},
+      "webhook_notifications": {},
+      "disabled": false
+    }
+  ],
+  "queue": {
+    "enabled": true
+  },
+  "parameters": [
+    {
+      "name": "p_batch_id",
+      "default": ""
+    }
+  ],
+  "environments": [
+    {
+      "environment_key": "Env_Build_Races_Dim",
+      "spec": {
+        "environment_version": "5"
+      }
+    }
+  ],
+  "performance_target": "PERFORMANCE_OPTIMIZED"
+}
